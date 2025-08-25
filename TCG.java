@@ -1,44 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+//Added a couple more features.
+
 package tcg;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.Serializable;
 import java.io.*;
+import java.util.Comparator;
 /**
  *
  * @author kidco
  */
 
-class Card implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
-    private String collection;
-    private String name;
-    private String type;
-    private String rarity;
-    private int amount;
-    
-    public Card(String collection, String name, String type, String rarity, int amount) {
-        this.collection = collection;
-        this.name = name;
-        this.type = type;
-        this.rarity = rarity;
-        this.amount = amount;
-    }
-    
-    @Override
-    public String toString() {
-        return "Collection: " + collection +
-                "\nCard Name: " + name +
-                "\nType: " + type +
-                "\nRarity: " + rarity +
-                "\nAmouunt Owned: " + amount + "\n";
-    }
-}
 public class TCG {
     private static final String FILE_NAME = "cards.json";
 
@@ -73,6 +46,8 @@ public class TCG {
             System.out.println("*** Card List ***");
             System.out.println("1. Add a Card");
             System.out.println("2. List all Cards");
+            System.out.println("3. Delete Cards");
+            System.out.println("4. Delete a card by name");
             System.out.println("0. Exit App");
             System.out.println("Make a choice");
             
@@ -86,6 +61,14 @@ public class TCG {
                 }
                 case 2 -> {
                     viewCards();
+                    break;
+                }
+                case 3 -> {
+                    deleteCard();
+                    break;
+                }
+                case 4 -> {
+                    deleteCardByName();
                     break;
                 }
                 case 0 -> {
@@ -126,10 +109,62 @@ public class TCG {
         if (cardCollection.isEmpty()){
             System.out.println("No cards are saved yet. ");
         } else {
+            cardCollection.sort(Comparator.comparing(Card::getName, String.CASE_INSENSITIVE_ORDER));
+            
             System.out.println("*** Your Card Collection ***");
             cardCollection.forEach(card -> {
                 System.out.println(card);
             });
+        }
+    }
+    
+    private static void deleteCard() {
+        if (cardCollection.isEmpty()) {
+            System.out.println("There are no cards to delete");
+            return;
+        }
+        
+        System.out.println("Delete card");
+        for (int i = 0; i < cardCollection.size(); i++) {
+            System.out.println((i + 1) + ". " + cardCollection.get(i).toString()); 
+        }
+        
+        System.out.print("Enter the number of card to delete: ");
+        try {
+            int index = Integer.parseInt(scanner.nextLine()) - 1;
+            if (index >= 0 && index < cardCollection.size()) {
+                Card removed = cardCollection.remove(index);
+                System.out.println("Deleted card: " + removed.toString());
+            } else {
+                System.out.println("Invalid card.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter valid number. ");
+        }
+    }
+    
+    private static void deleteCardByName() {
+        if(cardCollection.isEmpty()) {
+            System.out.println("No cards. ");
+            return;
+        }
+        
+        System.out.print("Enter the name of the card you wanted deleted: ");
+        String nameToDelete = scanner.nextLine().trim();
+        
+        boolean found = false;
+        for (int i = 0; i <cardCollection.size();i++) {
+            Card card = cardCollection.get(i);
+            if (card.toString().toLowerCase().contains(nameToDelete.toLowerCase())) {
+                cardCollection.remove(i);
+                System.out.println("Deleted card: " + card.toString());
+                found = true;
+                break;
+            }
+        }
+        
+        if(!found){
+            System.out.println("No card found");
         }
     }
 }
