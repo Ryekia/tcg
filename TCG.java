@@ -1,4 +1,5 @@
 //Added a couple more features.
+//Working on adding a gui to the app. 
 
 package tcg;
 
